@@ -1,15 +1,54 @@
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap");
+
 body {
   background-color: #fdfdfd;
   font-family: "Instrument Serif", serif;
   font-weight: 400;
   font-style: normal;
 }
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem; /* Adds space between header and search */
+  top: 0;
+}
+
 .header {
   display: flex;
   flex-direction: column;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  align-items: center;
+  text-align: center;
+}
+
+.search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em; /* Adds space between input and dropdown */
+}
+
+.search input {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+}
+
+.dropdown select {
+  padding: 0.5rem;
+  gap: 0.5em;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 100px;
+}
+.dropdown {
+  display: flex;
+  gap: 1rem; /* This adds a 1rem gap between the select elements */
+}
+
+.dropdown-1,
+.dropdown-2 {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
