@@ -1,6 +1,23 @@
-#root {
+.main {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* prevents child items from stretching vertically */
+  gap: 1.5rem;
+}
+.sidebar {
+  flex: 0 0 240px; /* fixed width: won't grow, won't shrink below 240px */
+  max-width: 260px;
+  text-align: left; /* usually sidebars are left aligned */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-right: 1px solid #eee; /* optional visual */
+}
+.content {
+  flex: 1; /* grow to fill remaining space */
 }
