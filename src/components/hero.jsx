@@ -38,7 +38,7 @@ const Hero = () => {
             ></select>
           </div>
           <Chips />
-          <Card />
+          {/* <Card /> */}
         </div>
       </div>
     </>
