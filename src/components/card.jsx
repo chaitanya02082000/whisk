@@ -1,8 +1,11 @@
-const Card = ({ heading, summary, recipe, onClick }) => {
+import { useNavigate } from "react-router-dom";
+
+const Card = ({ heading, summary, recipe }) => {
+  const navigate = useNavigate();
+
   const handleClick = () => {
-    if (onClick) {
-      onClick(recipe);
-    }
+    // Navigate to recipe detail page
+    navigate(`/recipe/${recipe._id}`);
   };
 
   return (

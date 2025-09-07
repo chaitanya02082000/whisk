@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./hero.css";
 import Chips from "./chips";
 import Card from "./card";
-import RecipeModal from "./RecipeModal"; // Add this import
+// Remove the RecipeModal import
 import { useRecipes } from "../contexts/RecipeContext";
 
 const Hero = () => {
@@ -12,9 +12,9 @@ const Hero = () => {
   const [category, setCategory] = useState("");
   const [cuisine, setCuisine] = useState("");
 
-  // Add modal state
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Remove modal state - we don't need it anymore
+  // const [selectedRecipe, setSelectedRecipe] = useState(null);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Get data and functions from context
   const { recipes, loading, error } = useRecipes();
@@ -62,35 +62,35 @@ const Hero = () => {
     setFilteredRecipes(filtered);
   }, [search, category, cuisine, selectedChips, recipes]);
 
-  // Add modal handlers
-  const handleRecipeClick = (recipe) => {
-    setSelectedRecipe(recipe);
-    setIsModalOpen(true);
-  };
+  // Remove modal handlers - we don't need them anymore
+  // const handleRecipeClick = (recipe) => {
+  //   setSelectedRecipe(recipe);
+  //   setIsModalOpen(true);
+  // };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedRecipe(null);
-  };
+  // const handleCloseModal = () => {
+  //   setIsModalOpen(false);
+  //   setSelectedRecipe(null);
+  // };
 
-  // Handle keyboard navigation for modal
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        handleCloseModal();
-      }
-    };
+  // Remove keyboard navigation for modal
+  // useEffect(() => {
+  //   const handleEscape = (event) => {
+  //     if (event.key === "Escape") {
+  //       handleCloseModal();
+  //     }
+  //   };
 
-    if (isModalOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden"; // Prevent background scroll
-    }
+  //   if (isModalOpen) {
+  //     document.addEventListener("keydown", handleEscape);
+  //     document.body.style.overflow = "hidden";
+  //   }
 
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
-    };
-  }, [isModalOpen]);
+  //   return () => {
+  //     document.removeEventListener("keydown", handleEscape);
+  //     document.body.style.overflow = "unset";
+  //   };
+  // }, [isModalOpen]);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -191,7 +191,7 @@ const Hero = () => {
               heading={recipe.name}
               summary={recipe.description}
               recipe={recipe}
-              onClick={handleRecipeClick} // Pass the click handler to Card
+              // Remove onClick prop - Card will handle navigation internally
             />
           ))
         ) : (
@@ -202,12 +202,12 @@ const Hero = () => {
         )}
       </div>
 
-      {/* Add the modal here */}
-      <RecipeModal
+      {/* Remove the modal */}
+      {/* <RecipeModal
         recipe={selectedRecipe}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-      />
+      /> */}
     </>
   );
 };
