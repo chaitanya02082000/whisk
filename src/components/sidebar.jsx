@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "./importRecipe.jsx";
+import { useSidebar } from "../contexts/SidebarContext";
 import "./sidebar.css";
 
-const Sidebar = () => {
+const Sidebar = ({ className = "" }) => {
   const navigate = useNavigate();
+  const { isCollapsed, toggleSidebar } = useSidebar();
 
   const handleRecipeAdded = (recipe) => {
     console.log("Recipe added successfully:", recipe);
@@ -16,8 +18,19 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${className}`}>
       <div className="sidebar-content">
+        {/* Close button for when sidebar is open */}
+        {!isCollapsed && (
+          <button
+            className="sidebar-close"
+            onClick={toggleSidebar}
+            title="Hide sidebar"
+          >
+            ✕
+          </button>
+        )}
+
         {/* Logo/Title that links to home */}
         <Link to="/" className="sidebar-title">
           <h3>Whisk</h3>

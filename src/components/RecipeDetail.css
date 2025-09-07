@@ -59,17 +59,17 @@
 
 .delete-btn {
   padding: 0.75rem 1rem;
-  border: 1px solid #d63384;
+  border: 1px solid #f0f0f0;
   border-radius: 4px;
   background: white;
-  color: #d63384;
+  color: #040316;
   font-size: 0.9rem;
   transition: all 0.2s ease;
 }
 
 .delete-btn:hover {
-  background: #d63384;
-  color: white;
+  background: #f0f0f0;
+  color: #040316;
 }
 
 /* Recipe Title Section */
@@ -162,9 +162,9 @@
 }
 
 .cuisine-tag {
-  background: #e8f4fd;
-  color: #0066cc;
-  border: 1px solid #b3d9ff;
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
 }
 
 .tag:hover {
