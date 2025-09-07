@@ -17,7 +17,60 @@ export const ChatProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [chatHistory, setChatHistory] = useState({}); // Store chat history per recipe
+  // Add this new function
+  const clearChatHistory = async (recipeId) => {
+    try {
+      setError(null);
+      setLoading(true);
 
+      const apiUrl = `${CHAT_URL}/recipes/${recipeId}/chat`;
+      const response = await axios.delete(apiUrl);
+
+      // Remove chat messages from local state (keep notes)
+      setNotes((prev) =>
+        prev.filter(
+          (note) => !(note.recipeId === recipeId && note.type === "chat"),
+        ),
+      );
+
+      console.log(
+        `✅ Cleared chat history: ${response.data.deletedCount} messages`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error clearing chat history:", error);
+      const errorMessage =
+        error.response?.data?.error || "Failed to clear chat history";
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Clear all notes and chats for a recipe
+  const clearAllNotes = async (recipeId) => {
+    try {
+      setError(null);
+      setLoading(true);
+
+      const apiUrl = `${CHAT_URL}/recipes/${recipeId}/all-notes`;
+      const response = await axios.delete(apiUrl);
+
+      // Remove all notes for this recipe from local state
+      setNotes((prev) => prev.filter((note) => note.recipeId !== recipeId));
+
+      console.log(`✅ Cleared all notes: ${response.data.deletedCount} items`);
+      return response.data;
+    } catch (error) {
+      console.error("Error clearing all notes:", error);
+      const errorMessage =
+        error.response?.data?.error || "Failed to clear all notes";
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
   // Enhanced error handling
   const handleError = useCallback((error, defaultMessage) => {
     console.error("API Error:", error);
@@ -165,14 +218,6 @@ export const ChatProvider = ({ children }) => {
     [chatHistory],
   );
 
-  // Clear chat history for a recipe
-  const clearChatHistory = useCallback((recipeId) => {
-    setChatHistory((prev) => ({
-      ...prev,
-      [recipeId]: [],
-    }));
-  }, []);
-
   const value = {
     notes,
     loading,
@@ -184,6 +229,7 @@ export const ChatProvider = ({ children }) => {
     deleteNote,
     getChatHistory,
     clearChatHistory,
+    clearAllNotes,
     clearError: () => setError(null),
   };
 

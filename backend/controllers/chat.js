@@ -41,7 +41,25 @@ chatRouter.post("/recipes/:recipeId/notes", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+chatRouter.delete("/recipes/:recipeId/chat", async (req, res) => {
+  try {
+    const { recipeId } = req.params;
 
+    // Delete only chat messages for this recipe (keep notes)
+    const result = await Note.deleteMany({
+      recipeId,
+      type: "chat",
+    });
+
+    res.json({
+      message: `Cleared ${result.deletedCount} chat messages`,
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Error clearing chat history:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 // Chat with AI about a recipe - Updated route
 chatRouter.post("/recipes/:recipeId/chat", async (req, res) => {
   try {

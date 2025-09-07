@@ -5,8 +5,19 @@ import "./RecipeChat.css";
 const RecipeChat = ({ recipe, activeView, onViewChange }) => {
   const [message, setMessage] = useState("");
   const [noteContent, setNoteContent] = useState("");
-  const { notes, loading, sendChatMessage, saveNote, deleteNote, fetchNotes } =
-    useChat();
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  const {
+    notes,
+    loading,
+    sendChatMessage,
+    saveNote,
+    deleteNote,
+    fetchNotes,
+    clearChatHistory, // Add this
+    error,
+  } = useChat();
+
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -47,7 +58,6 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
     }
   };
 
-  // New function to save a chat message as a note
   const handleSaveChatAsNote = async (chatMessage) => {
     try {
       const noteText = chatMessage.isFromAI
@@ -55,12 +65,21 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
         : `💭 My Question: ${chatMessage.content}`;
 
       await saveNote(recipe._id, noteText);
-
-      // Show a brief success message (you can style this)
       alert("Message saved to notes!");
     } catch (error) {
       console.error("Failed to save chat as note:", error);
       alert("Failed to save message to notes");
+    }
+  };
+
+  // New function to handle clearing chat history
+  const handleClearChat = async () => {
+    try {
+      await clearChatHistory(recipe._id);
+      setShowClearConfirm(false);
+    } catch (error) {
+      console.error("Failed to clear chat:", error);
+      alert("Failed to clear chat history");
     }
   };
 
@@ -87,8 +106,43 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
         </div>
       </div>
 
+      {/* Error display */}
+      {error && <div className="error-message">{error}</div>}
+
       {activeView === "chat" && (
         <div className="chat-view">
+          {/* Chat Actions */}
+          {chatMessages.length > 0 && (
+            <div className="chat-actions">
+              {!showClearConfirm ? (
+                <button
+                  className="clear-chat-btn"
+                  onClick={() => setShowClearConfirm(true)}
+                  title="Clear chat history"
+                >
+                  🗑️ Clear Chat
+                </button>
+              ) : (
+                <div className="clear-confirm">
+                  <span>Clear all chat messages?</span>
+                  <button
+                    className="confirm-yes"
+                    onClick={handleClearChat}
+                    disabled={loading}
+                  >
+                    {loading ? "⏳" : "✓"} Yes
+                  </button>
+                  <button
+                    className="confirm-no"
+                    onClick={() => setShowClearConfirm(false)}
+                  >
+                    ✗ Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="messages-container">
             {chatMessages.length === 0 ? (
               <div className="empty-state">
@@ -126,7 +180,6 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
                     <div className="message-time">
                       {new Date(note.timestamp).toLocaleTimeString()}
                     </div>
-                    {/* Save to Notes button */}
                     <button
                       className="save-to-notes-btn"
                       onClick={() => handleSaveChatAsNote(note)}
@@ -158,7 +211,6 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
 
       {activeView === "notes" && (
         <div className="notes-view">
-          {/* Manual note input form */}
           <form onSubmit={handleSaveNote} className="note-form">
             <textarea
               value={noteContent}
