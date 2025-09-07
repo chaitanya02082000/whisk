@@ -47,6 +47,23 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
     }
   };
 
+  // New function to save a chat message as a note
+  const handleSaveChatAsNote = async (chatMessage) => {
+    try {
+      const noteText = chatMessage.isFromAI
+        ? `💡 AI Tip: ${chatMessage.content}`
+        : `💭 My Question: ${chatMessage.content}`;
+
+      await saveNote(recipe._id, noteText);
+
+      // Show a brief success message (you can style this)
+      alert("Message saved to notes!");
+    } catch (error) {
+      console.error("Failed to save chat as note:", error);
+      alert("Failed to save message to notes");
+    }
+  };
+
   const chatMessages = notes.filter((note) => note.type === "chat");
   const savedNotes = notes.filter((note) => note.type === "note");
 
@@ -59,13 +76,13 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
             className={activeView === "chat" ? "active" : ""}
             onClick={() => onViewChange("chat")}
           >
-            💬 Chat
+            💬 Chat ({chatMessages.length})
           </button>
           <button
             className={activeView === "notes" ? "active" : ""}
             onClick={() => onViewChange("notes")}
           >
-            📝 Notes
+            📝 Notes ({savedNotes.length})
           </button>
         </div>
       </div>
@@ -105,8 +122,18 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
                   className={`message ${note.isFromAI ? "ai-message" : "user-message"}`}
                 >
                   <div className="message-content">{note.content}</div>
-                  <div className="message-time">
-                    {new Date(note.timestamp).toLocaleTimeString()}
+                  <div className="message-footer">
+                    <div className="message-time">
+                      {new Date(note.timestamp).toLocaleTimeString()}
+                    </div>
+                    {/* Save to Notes button */}
+                    <button
+                      className="save-to-notes-btn"
+                      onClick={() => handleSaveChatAsNote(note)}
+                      title="Save this message to notes"
+                    >
+                      📝
+                    </button>
                   </div>
                 </div>
               ))
@@ -131,6 +158,7 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
 
       {activeView === "notes" && (
         <div className="notes-view">
+          {/* Manual note input form */}
           <form onSubmit={handleSaveNote} className="note-form">
             <textarea
               value={noteContent}
@@ -139,16 +167,17 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
               rows="3"
             />
             <button type="submit" disabled={!noteContent.trim()}>
-              Save Note
+              💾 Save Note
             </button>
           </form>
 
           <div className="notes-list">
             {savedNotes.length === 0 ? (
               <div className="empty-state">
+                <p>No notes yet!</p>
                 <p>
-                  No notes yet. Add your personal thoughts, modifications, or
-                  reminders!
+                  💡 <strong>Tip:</strong> You can save chat messages as notes
+                  by clicking the 📝 button next to any message in the chat.
                 </p>
               </div>
             ) : (
@@ -157,11 +186,13 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
                   <div className="note-content">{note.content}</div>
                   <div className="note-footer">
                     <span className="note-time">
-                      {new Date(note.timestamp).toLocaleDateString()}
+                      {new Date(note.timestamp).toLocaleDateString()} at{" "}
+                      {new Date(note.timestamp).toLocaleTimeString()}
                     </span>
                     <button
                       onClick={() => deleteNote(note._id)}
                       className="delete-note-btn"
+                      title="Delete this note"
                     >
                       🗑️
                     </button>

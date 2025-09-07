@@ -75,8 +75,7 @@ export const ChatProvider = ({ children }) => {
     try {
       setError(null);
       // Updated URL to match your backend structure
-      const apiUrl = `${URL.replace("/api/recipes", "/api/chat")}/recipes/${recipeId}/notes`;
-
+      const apiUrl = `${CHAT_URL}/recipes/${recipeId}/notes`;
       const response = await axios.post(apiUrl, {
         content,
         type: "note",
