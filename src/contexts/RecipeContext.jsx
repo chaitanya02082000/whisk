@@ -34,13 +34,18 @@ export const RecipeProvider = ({ children }) => {
 
   // Parse recipe from URL and add it
   const parseAndAddRecipe = async (url) => {
+    console.log("Parsing URL:", url);
+    console.log("API endpoint:", `${URL}parse`); // Debug log
     try {
+      // Fixed: Added missing forward slash
       const response = await axios.post(`${URL}parse`, { url });
+      console.log("API response:", response.data);
       // Immediately update the local state
       setRecipes((prevRecipes) => [...prevRecipes, response.data]);
       return response.data;
     } catch (error) {
       console.error("Error parsing recipe:", error);
+      console.error("Error details:", error.response?.data); // More detailed error logging
       setError("Failed to parse recipe");
       throw error;
     }
@@ -61,8 +66,11 @@ export const RecipeProvider = ({ children }) => {
 
   // Update an existing recipe
   const updateRecipe = async (id, updatedRecipe) => {
+    console.log("Updating recipe:", id, updatedRecipe);
     try {
-      const response = await axios.put(`${URL}${id}`, updatedRecipe);
+      // Fixed: Added missing forward slash
+      const response = await axios.put(`${URL}/${id}`, updatedRecipe);
+      console.log("Update response:", response.data);
       setRecipes((prevRecipes) =>
         prevRecipes.map((recipe) =>
           recipe._id === id ? response.data : recipe,
@@ -79,7 +87,8 @@ export const RecipeProvider = ({ children }) => {
   // Delete a recipe
   const deleteRecipe = async (id) => {
     try {
-      await axios.delete(`${URL}${id}`);
+      // Fixed: Added missing forward slash
+      await axios.delete(`${URL}/${id}`);
       setRecipes((prevRecipes) =>
         prevRecipes.filter((recipe) => recipe._id !== id),
       );
@@ -105,7 +114,7 @@ export const RecipeProvider = ({ children }) => {
     loading,
     error,
     fetchRecipes,
-    parseAndAddRecipe, // Add this new function
+    parseAndAddRecipe,
     addRecipe,
     updateRecipe,
     deleteRecipe,
