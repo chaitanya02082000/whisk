@@ -2,22 +2,46 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
   display: flex;
   flex-direction: row;
-  align-items: flex-start; /* prevents child items from stretching vertically */
+  align-items: flex-start;
   gap: 1.5rem;
+  min-height: 100vh;
 }
+
 .sidebar {
-  flex: 0 0 240px; /* fixed width: won't grow, won't shrink below 240px */
+  flex: 0 0 240px;
   max-width: 260px;
-  text-align: left; /* usually sidebars are left aligned */
+  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 0.5rem;
-  border-right: 1px solid #eee; /* optional visual */
+  padding: 1rem;
+  border-right: 1px solid #eee;
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
 }
+
 .content {
-  flex: 1; /* grow to fill remaining space */
+  flex: 1;
+  min-width: 0; /* Prevents flex item from overflowing */
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .sidebar {
+    flex: none;
+    max-width: none;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+  }
 }

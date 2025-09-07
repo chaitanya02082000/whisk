@@ -1,9 +1,13 @@
-import axios from "axios";
 import { useState } from "react";
+import { useRecipes } from "../contexts/RecipeContext";
 
+import "./sidebar.css";
 const Button = ({ children, onSuccess, onError }) => {
   const [recipeUrl, setRecipeUrl] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Use the parseAndAddRecipe function from context
+  const { parseAndAddRecipe } = useRecipes();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,16 +18,12 @@ const Button = ({ children, onSuccess, onError }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/recipes/parse",
-        {
-          url: recipeUrl,
-        },
-      );
+      const recipe = await parseAndAddRecipe(recipeUrl);
       setLoading(false);
       setRecipeUrl("");
+
       if (onSuccess) {
-        onSuccess(response.data);
+        onSuccess(recipe);
       }
     } catch (error) {
       setLoading(false);
@@ -43,7 +43,7 @@ const Button = ({ children, onSuccess, onError }) => {
         placeholder="Paste recipe URL here"
         className="recipe-input"
       />
-      <button type="submit" disabled={loading}>
+      <button className="sidebar-button" type="submit" disabled={loading}>
         {loading ? "Processing..." : children || "Parse Recipe"}
       </button>
     </form>

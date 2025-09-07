@@ -11,8 +11,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem; /* Adds space between header and search */
+  gap: 2rem;
   top: 0;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .header {
@@ -22,33 +25,249 @@ body {
   text-align: center;
 }
 
+.header h1 {
+  font-size: 3rem;
+  color: #040316;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+.header h2 {
+  font-size: 1.2rem;
+  color: #555;
+  font-weight: 400;
+  max-width: 600px;
+  line-height: 1.4;
+}
+
 .search {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1em; /* Adds space between input and dropdown */
+  gap: 1em;
+  width: 100%;
+  max-width: 800px;
 }
 
 .search input {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: "Instrument Serif", serif;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 600px;
 }
 
-.dropdown select {
-  padding: 0.5rem;
-  gap: 0.5em;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  width: 100px;
+.search input:focus {
+  outline: none;
+  border-color: #040316;
 }
+
 .dropdown {
   display: flex;
-  gap: 1rem; /* This adds a 1rem gap between the select elements */
+  gap: 1rem;
 }
 
 .dropdown-1,
 .dropdown-2 {
-  padding: 0.5rem;
+  padding: 0.75rem;
   border-radius: 4px;
   border: 1px solid #ccc;
+  font-family: "Instrument Serif", serif;
+  font-size: 0.9rem;
+  background: white;
+  min-width: 150px;
+}
+
+.dropdown-1:focus,
+.dropdown-2:focus {
+  outline: none;
+  border-color: #040316;
+}
+
+/* Recipe Cards Styles */
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.recipe-card {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+  cursor: pointer;
+  font-family: "Instrument Serif", serif;
+  height: fit-content;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.recipe-card:hover {
+  border-color: #999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.recipe-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+  filter: grayscale(20%);
+}
+
+.recipe-card h2 {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #040316;
+  margin: 1rem 1rem 0.5rem;
+  line-height: 1.3;
+}
+
+.recipe-card p {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 1rem 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin: 0 1rem 1rem;
+  padding: 0.75rem;
+  background: #f8f8f8;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.time > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 400;
+}
+
+.time > div span {
+  white-space: nowrap;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 1rem 1rem;
+}
+
+.category-tag {
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: capitalize;
+  transition: background-color 0.2s ease;
+}
+
+.category-tag:hover {
+  background: #e8e8e8;
+  border-color: #bbb;
+}
+
+/* Empty state */
+.no-recipes {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  grid-column: 1 / -1;
+}
+
+.no-recipes h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #040316;
+  font-weight: 400;
+}
+
+.no-recipes p {
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hero {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+  }
+
+  .header h2 {
+    font-size: 1.1rem;
+  }
+
+  .recipes-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem 0;
+    gap: 1rem;
+  }
+
+  .recipe-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .time {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .dropdown {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dropdown-1,
+  .dropdown-2 {
+    width: 100%;
+  }
+
+  .search input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+@media (max-width: 480px) {
+  .recipe-card {
+    margin: 0 0.5rem;
+  }
+
+  .hero {
+    padding: 0.5rem;
+  }
 }

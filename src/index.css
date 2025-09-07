@@ -1,14 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap");
+
 :root {
   font-family: "Instrument Serif", serif;
   font-weight: 400;
   font-style: normal;
-
   color-scheme: light;
   color: #040316;
   background-color: #fdfdfd;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #fdfdfd;
+  font-family: "Instrument Serif", serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #040316;
+  line-height: 1.6;
+}
+
+/* Global button styles */
+button {
+  font-family: "Instrument Serif", serif;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Global input styles */
+input,
+select,
+textarea {
+  font-family: "Instrument Serif", serif;
+  font-size: 1rem;
+}
+
+/* Global headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Instrument Serif", serif;
+  font-weight: 400;
+  color: #040316;
+  margin: 0;
 }
