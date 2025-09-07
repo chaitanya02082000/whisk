@@ -70,10 +70,19 @@ chatRouter.post("/recipes/:recipeId/chat", async (req, res) => {
     // Get AI response
     const aiResponse = await chatWithRecipeAI(recipe, message);
 
+    // FIX: Ensure we save a string, not an object
+    let aiContent;
+    if (typeof aiResponse === "object") {
+      // If it's an object, stringify it or extract the main response
+      aiContent = aiResponse.response || JSON.stringify(aiResponse);
+    } else {
+      aiContent = aiResponse;
+    }
+
     // Save AI response
     const aiNote = new Note({
       recipeId,
-      content: aiResponse,
+      content: aiContent, // Now guaranteed to be a string
       type: "chat",
       isFromAI: true,
     });
