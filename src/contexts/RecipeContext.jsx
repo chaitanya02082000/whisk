@@ -49,7 +49,7 @@ export function RecipeProvider({ children }) {
 
   const addRecipe = async (recipeData) => {
     try {
-      const response = await apiCall("/api/recipes/parse", {
+      const response = await apiCall("/api/recipes", {
         method: "POST",
         body: JSON.stringify(recipeData),
       });
@@ -64,6 +64,28 @@ export function RecipeProvider({ children }) {
       return newRecipe;
     } catch (error) {
       console.error("Error adding recipe:", error);
+      throw error;
+    }
+  };
+
+  // Add the missing parseAndAddRecipe function
+  const parseAndAddRecipe = async (url) => {
+    try {
+      const response = await apiCall("/api/recipes/parse", {
+        method: "POST",
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to parse recipe from URL");
+      }
+
+      const newRecipe = await response.json();
+      setRecipes((prev) => [newRecipe, ...prev]);
+      return newRecipe;
+    } catch (error) {
+      console.error("Error parsing recipe:", error);
       throw error;
     }
   };
@@ -97,6 +119,7 @@ export function RecipeProvider({ children }) {
     isLoading,
     fetchRecipes,
     addRecipe,
+    parseAndAddRecipe, // Add this to the context value
     deleteRecipe,
     apiCall, // Expose for other components
   };
