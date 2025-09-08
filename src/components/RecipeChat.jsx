@@ -175,7 +175,18 @@ const RecipeChat = ({ recipe, activeView, onViewChange }) => {
                   key={note._id}
                   className={`message ${note.isFromAI ? "ai-message" : "user-message"}`}
                 >
-                  <div className="message-content">{note.content}</div>
+                  <div className="message-content">
+                    {/* Better formatting for AI responses */}
+                    {note.isFromAI ? (
+                      <div className="ai-response">
+                        {note.content.split("\n\n").map((paragraph, index) => (
+                          <p key={index}>{paragraph}</p>
+                        ))}
+                      </div>
+                    ) : (
+                      note.content
+                    )}
+                  </div>
                   <div className="message-footer">
                     <div className="message-time">
                       {new Date(note.timestamp).toLocaleTimeString()}

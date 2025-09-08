@@ -11,35 +11,8 @@ const chatWithRecipeAI = async (recipe, userMessage) => {
       model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 1024,
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "object",
-          properties: {
-            response: {
-              type: "string",
-              description: "The main response to the user's question",
-            },
-            suggestions: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  ingredient: { type: "string" },
-                  substitutes: {
-                    type: "array",
-                    items: { type: "string" },
-                  },
-                  notes: { type: "string" },
-                },
-              },
-            },
-            tips: {
-              type: "array",
-              items: { type: "string" },
-            },
-          },
-        },
+        maxOutputTokens: 2048, // Increased from 1024
+        responseMimeType: "text/plain", // Changed from JSON
       },
     });
 
@@ -61,38 +34,61 @@ ${recipe.instructions?.map((inst, i) => `${i + 1}. ${inst}`).join("\n")}
 `;
 
     const prompt = `
-You are a helpful cooking assistant. A user is asking about this specific recipe:
+You are a helpful cooking assistant chatting with someone about a recipe. Keep your response conversational, friendly, and well-formatted.
 
+Recipe Context:
 ${recipeContext}
 
-User question: ${userMessage}
+User Question: "${userMessage}"
 
-Please provide a structured response with:
-1. A main response answering their question
-2. If they're asking about substitutions, provide an array of ingredient substitution suggestions
-3. Any relevant cooking tips
+Guidelines for your response:
+- Write in a friendly, conversational tone
+- Use proper paragraphs and line breaks for readability
+- If suggesting substitutions, format them clearly with bullet points
+- Keep cooking tips organized and easy to read
+- End with an encouraging note or follow-up question if appropriate
+- Maximum 3-4 paragraphs unless they ask for detailed instructions
+- Use emojis sparingly and appropriately
 
-Format your response as JSON with the specified schema. Be helpful, friendly, and concise.
-`;
+Provide a helpful response:`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
 
-    try {
-      const jsonResponse = JSON.parse(response.text());
+    const cleanResponse = response.text().trim();
 
-      // IMPORTANT: Return only the string response for your current backend
-      // Your backend expects a string, not an object
-      return jsonResponse.response || "I couldn't generate a proper response.";
-    } catch (parseError) {
-      // Fallback to plain text if JSON parsing fails
-      console.warn("Failed to parse JSON response, falling back to plain text");
-      return response.text().trim();
-    }
+    // Add some basic formatting if the response is too long or poorly structured
+    const formattedResponse = formatChatResponse(cleanResponse);
+
+    console.log("✅ Generated response length:", formattedResponse.length);
+
+    return formattedResponse;
   } catch (error) {
     console.error("❌ Error in recipe chat AI:", error);
     return "I'm sorry, I couldn't process your question right now. Please try again later.";
   }
+};
+
+// Helper function to format the AI response
+const formatChatResponse = (response) => {
+  // Remove any JSON artifacts that might have leaked through
+  let formatted = response.replace(/^```json\s*/, "").replace(/```$/, "");
+  formatted = formatted
+    .replace(/^\{[\s\S]*?"response":\s*"/, "")
+    .replace(/"[\s\S]*\}$/, "");
+
+  // Clean up common formatting issues
+  formatted = formatted
+    .replace(/\*\*/g, "") // Remove markdown bold
+    .replace(/\* /g, "\n• ") // Convert asterisk lists to bullet points
+    .replace(/\n\n\n+/g, "\n\n") // Remove excessive line breaks
+    .replace(/^\n+/, "") // Remove leading newlines
+    .replace(/\n+$/, ""); // Remove trailing newlines
+
+  // Ensure proper paragraph breaks
+  formatted = formatted.replace(/([.!?])\s*([A-Z])/g, "$1\n\n$2");
+
+  return formatted;
 };
 
 export { chatWithRecipeAI };
