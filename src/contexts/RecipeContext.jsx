@@ -1,128 +1,115 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "@clerk/clerk-react";
 
-const URL = import.meta.env.VITE_URL;
 const RecipeContext = createContext();
 
-export const useRecipes = () => {
-  const context = useContext(RecipeContext);
-  if (!context) {
-    throw new Error("useRecipes must be used within a RecipeProvider");
-  }
-  return context;
-};
-
-export const RecipeProvider = ({ children }) => {
+export function RecipeProvider({ children }) {
+  const { getToken, isLoaded, userId } = useAuth();
   const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Clear error after some time
-  const clearError = () => {
-    setTimeout(() => setError(null), 5000);
+  // API helper with authentication
+  const apiCall = async (url, options = {}) => {
+    if (!isLoaded) {
+      throw new Error("Auth not loaded yet");
+    }
+
+    const token = await getToken();
+
+    return fetch(`http://localhost:3001${url}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        ...options.headers,
+      },
+    });
   };
 
-  // Fetch all recipes
   const fetchRecipes = async () => {
+    if (!isLoaded || !userId) return;
+
     try {
-      setLoading(true);
-      setError(null);
-      const response = await axios.get(URL);
-      setRecipes(response.data);
+      setIsLoading(true);
+      const response = await apiCall("/api/recipes");
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setRecipes(data);
     } catch (error) {
       console.error("Error fetching recipes:", error);
-      setError("Failed to fetch recipes");
-      clearError();
+      setRecipes([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  // Parse recipe from URL and add it
-  const parseAndAddRecipe = async (url) => {
-    console.log("Parsing URL:", url);
+  const addRecipe = async (recipeData) => {
     try {
-      const response = await axios.post(`${URL}/parse`, { url });
-      console.log("API response:", response.data);
+      const response = await apiCall("/api/recipes/parse", {
+        method: "POST",
+        body: JSON.stringify(recipeData),
+      });
 
-      // Immediately update the local state
-      setRecipes((prevRecipes) => [...prevRecipes, response.data]);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add recipe");
+      }
 
-      // Clear any previous errors
-      setError(null);
-
-      return response.data;
+      const newRecipe = await response.json();
+      setRecipes((prev) => [newRecipe, ...prev]);
+      return newRecipe;
     } catch (error) {
-      console.error("Error parsing recipe:", error);
-
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        "Failed to parse recipe";
-      setError(errorMessage);
-      clearError();
+      console.error("Error adding recipe:", error);
       throw error;
     }
   };
 
-  // Update an existing recipe
-  const updateRecipe = async (id, updatedRecipe) => {
+  const deleteRecipe = async (recipeId) => {
     try {
-      const response = await axios.put(`${URL}/${id}`, updatedRecipe);
-      setRecipes((prevRecipes) =>
-        prevRecipes.map((recipe) =>
-          recipe._id === id ? response.data : recipe,
-        ),
-      );
-      setError(null);
-      return response.data;
-    } catch (error) {
-      console.error("Error updating recipe:", error);
-      setError("Failed to update recipe");
-      clearError();
-      throw error;
-    }
-  };
+      const response = await apiCall(`/api/recipes/${recipeId}`, {
+        method: "DELETE",
+      });
 
-  // Delete a recipe
-  const deleteRecipe = async (id) => {
-    try {
-      await axios.delete(`${URL}/${id}`);
-      setRecipes((prevRecipes) =>
-        prevRecipes.filter((recipe) => recipe._id !== id),
-      );
-      setError(null);
+      if (!response.ok) {
+        throw new Error("Failed to delete recipe");
+      }
+
+      setRecipes((prev) => prev.filter((recipe) => recipe._id !== recipeId));
     } catch (error) {
       console.error("Error deleting recipe:", error);
-      setError("Failed to delete recipe");
-      clearError();
       throw error;
     }
   };
 
-  // Refresh recipes
-  const refreshRecipes = () => {
-    fetchRecipes();
-  };
-
-  // Initial fetch on mount
+  // Fetch recipes when auth is loaded and user is available
   useEffect(() => {
-    fetchRecipes();
-  }, []);
+    if (isLoaded && userId) {
+      fetchRecipes();
+    }
+  }, [isLoaded, userId]);
 
   const value = {
     recipes,
-    loading,
-    error,
+    isLoading,
     fetchRecipes,
-    parseAndAddRecipe,
-    updateRecipe,
+    addRecipe,
     deleteRecipe,
-    refreshRecipes,
-    clearError: () => setError(null),
+    apiCall, // Expose for other components
   };
 
   return (
     <RecipeContext.Provider value={value}>{children}</RecipeContext.Provider>
   );
+}
+
+export const useRecipes = () => {
+  const context = useContext(RecipeContext);
+  if (!context) {
+    throw new Error("useRecipes must be used within RecipeProvider");
+  }
+  return context;
 };

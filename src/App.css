@@ -103,3 +103,36 @@
     margin-bottom: 1rem !important;
   }
 }
+/* Add this to your existing App.css */
+
+.user-section {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure the sidebar toggle doesn't overlap with user button */
+.sidebar-toggle {
+  top: 20px;
+  left: 20px;
+  z-index: 999;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .user-section {
+    top: 15px;
+    right: 15px;
+  }
+
+  .sidebar-toggle {
+    top: 15px;
+    left: 15px;
+  }
+}
