@@ -16,7 +16,7 @@ export function RecipeProvider({ children }) {
 
     const token = await getToken();
 
-    return fetch(`http://localhost:3001${url}`, {
+    return fetch(`https://whisk-pc10.onrender.com${url}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
